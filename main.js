@@ -95,10 +95,11 @@ void main() {
              float rx = uScaleX * 0.3;
              float ry = uScaleY * 0.3;
              
-             int minX = int(ceil(centerX - rx));
-             int maxX = int(floor(centerX + rx));
-             int minY = int(ceil(centerY - ry));
-             int maxY = int(floor(centerY + ry));
+             ivec2 texSize = textureSize(uImage, 0);
+             int minX = max(0, int(ceil(centerX - rx)));
+             int maxX = min(texSize.x - 1, int(floor(centerX + rx)));
+             int minY = max(0, int(ceil(centerY - ry)));
+             int maxY = min(texSize.y - 1, int(floor(centerY + ry)));
              
              vec4 sum = vec4(0.0);
              float count = 0.0;
@@ -193,15 +194,19 @@ void main() {
     float centerY = uOffsetY + ky * uScaleY + uScaleY * 0.5;
     
     if (uSampleCenterOnly) {
-         outColor = texelFetch(uImage, ivec2(int(centerX), int(centerY)), 0);
+         ivec2 texSize = textureSize(uImage, 0);
+         int cx = clamp(int(centerX), 0, texSize.x - 1);
+         int cy = clamp(int(centerY), 0, texSize.y - 1);
+         outColor = texelFetch(uImage, ivec2(cx, cy), 0);
     } else {
          float rx = uScaleX * 0.3;
          float ry = uScaleY * 0.3;
          
-         int minX = int(ceil(centerX - rx));
-         int maxX = int(floor(centerX + rx));
-         int minY = int(ceil(centerY - ry));
-         int maxY = int(floor(centerY + ry));
+         ivec2 texSize = textureSize(uImage, 0);
+         int minX = max(0, int(ceil(centerX - rx)));
+         int maxX = min(texSize.x - 1, int(floor(centerX + rx)));
+         int minY = max(0, int(ceil(centerY - ry)));
+         int maxY = min(texSize.y - 1, int(floor(centerY + ry)));
          
          vec4 sum = vec4(0.0);
          float count = 0.0;
@@ -216,7 +221,9 @@ void main() {
          if (count > 0.0) {
              outColor = sum / count;
          } else {
-             outColor = texelFetch(uImage, ivec2(int(centerX), int(centerY)), 0);
+             int cx = clamp(int(centerX), 0, texSize.x - 1);
+             int cy = clamp(int(centerY), 0, texSize.y - 1);
+             outColor = texelFetch(uImage, ivec2(cx, cy), 0);
          }
     }
 }
