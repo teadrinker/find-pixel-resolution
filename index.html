@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Resolution Finder</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #drop-zone {
+            width: 80%;
+            height: 60%;
+            border: 2px dashed #555;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            background-color: #252526;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+
+        #drop-zone.dragover {
+            background-color: #333;
+            border-color: #007acc;
+        }
+
+        #instruction {
+            pointer-events: none;
+            font-size: 1.5rem;
+            color: #888;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+            position: absolute;
+            display: none;
+        }
+
+        #controls {
+            width: 80%;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #252526;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #results {
+            flex-grow: 1;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 20px;
+        }
+
+        input[type="number"] {
+            background: #3c3c3c;
+            border: 1px solid #555;
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            width: 60px;
+        }
+
+        button {
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #0098ff;
+        }
+
+        button:disabled {
+            background-color: #444;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="drop-zone">
+        <div id="instruction">Drop an image here</div>
+        <canvas id="gl-canvas"></canvas>
+    </div>
+
+    <div id="controls">
+        <div id="results">
+            Waiting for image...
+        </div>
+        <div class="control-group">
+            <div style="display:flex; align-items:center;">
+                <input type="checkbox" id="sample-center">
+                <label for="sample-center" style="margin-left:5px; font-size: 0.9rem;">Sample center only</label>
+            </div>
+            <input type="number" id="max-scale" value="16" min="2" max="512">
+            <button id="download-lowres-btn" disabled>Download Reconstructed</button>
+        </div>
+    </div>
+
+    <script src="analyzer.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

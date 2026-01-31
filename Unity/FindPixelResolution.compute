@@ -1,0 +1,47 @@
+#pragma kernel CalcColDiffs
+#pragma kernel CalcRowDiffs
+
+Texture2D<float4> InputTexture;
+RWStructuredBuffer<float> ColDiffs; // Size: Width
+RWStructuredBuffer<float> RowDiffs; // Size: Height
+
+uint Width;
+uint Height;
+
+[numthreads(64, 1, 1)]
+void CalcColDiffs (uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= Width) return;
+
+    float sum = 0;
+    for (uint y = 0; y < Height; y++)
+    {
+        float4 c = InputTexture[uint2(id.x, y)];
+        // Compare with left neighbor
+        uint x_prev = id.x > 0 ? id.x - 1 : 0;
+        float4 l = InputTexture[uint2(x_prev, y)];
+        
+        float4 diff = abs(c - l);
+        sum += diff.r + diff.g + diff.b; // L1 norm
+    }
+    ColDiffs[id.x] = sum;
+}
+
+[numthreads(64, 1, 1)]
+void CalcRowDiffs (uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= Height) return; // id.x maps to y coordinate here
+
+    float sum = 0;
+    for (uint x = 0; x < Width; x++)
+    {
+        float4 c = InputTexture[uint2(x, id.x)];
+        // Compare with top neighbor (or bottom, just previous)
+        uint y_prev = id.x > 0 ? id.x - 1 : 0;
+        float4 t = InputTexture[uint2(x, y_prev)];
+        
+        float4 diff = abs(c - t);
+        sum += diff.r + diff.g + diff.b;
+    }
+    RowDiffs[id.x] = sum;
+}
